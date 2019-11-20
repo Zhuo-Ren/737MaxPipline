@@ -1,24 +1,24 @@
 # 教程 https://www.cnblogs.com/awakenedy/articles/9182036.html
 # 教程 https://docs.python.org/3/library/datetime.html#module-datetime
 
-import datetime3
-from sysdb import SysDb
+import datetime3  # 日期
+import time  # 睡觉
+from sysdb import SysDb  # 数据库
 import requests
-import requestsplus  # 升级requests.get()的功能使之支持自动重定向
+import requestsplus  # 升级requests.get()的功能
 from lxml import etree
 import re
-import time
 from readability import Document
-from indentation import indent
 from html2text import html2text
+from indentation import indent  # 字符串缩进
 
 
 # 搜索引擎
 searchEngine = 'bing.com'
 
 # 起止日期（截止日期当天不搜）
-startDate = datetime3.date(2018, 8, 1)
-endDate = datetime3.date(2018, 8, 2)  # (2018, 8, 2)
+startDate = datetime3.date(2018, 7, 2)
+endDate = datetime3.date(2018, 7, 3)  # (2018, 8, 2)
 
 # 每天搜几个新闻
 howManyNewsOneDay = 4
@@ -70,6 +70,10 @@ try:
         newsList = tree.xpath('/html/body[1]/div[1]/main[1]/ol[1]/li[@class="b_algo"]')
         newsNum = len(newsList)
         print('真正有效的新闻共几条：', newsNum)
+        # 保存搜索页
+        file = open("./corpora/" + searchEngine + '_' + str(curDate) + '.html', "wb")
+        file.write(searchHtml.encode('utf-8'))
+        file.close()
 
         # 循环(howManyNewsOneDay)条真正有效的新闻
         newsIndex = 0  # 注意是从1开始的,因为以上来就+=1(历史原因，懒得改了)
@@ -92,13 +96,20 @@ try:
             print('    简介：', end='')
             print(indent(introduction, length=40, fIndent=0, lIndent=10))
             newsTime = re.findall(r'^\d+-\d+-\d+', introduction, re.I)[0]
+            newsTimeYear = int(re.findall(r'^\d+(?=-)', newsTime, re.I)[0])
+            newsTimeMonth = int(re.findall(r'(?<=-)\d+(?=-)', newsTime, re.I)[0])
+            newsTimeDay = int(re.findall(r'(?<=-)\d+$', newsTime, re.I)[0])
             print('    发布时间：', newsTime)
-            newsId = searchEngine + ':' + str(curDate) + ':' + str(newsIndex)
+            newsId = searchEngine + '_' + str(curDate) + '_' + str(newsIndex)
             print('    Id：', newsId)
 
             # 访问新闻网页
             # 发送一个http请求并接收结
-            r = requests.getPlus(newsUrl, verify=certFile)
+            try:
+                r = requests.getPlus(newsUrl, verify=certFile)
+            except Exception as e:
+                print('    这个新闻网站跪了，不算数：', e)
+                continue
             # 获取返回html文本
             '''r.encoding = "utf-8"'''
             newsHtml = r.text
@@ -131,16 +142,17 @@ try:
                     '搜索日期日': curDate.day,
                     '搜索网址': searchUrl,
                     '搜索html': searchHtml,
-                    '新闻序号': newsIndex,  # 新闻在结果页面中的序号
+                    '新闻序号': newsIndex,
                     '新闻ID': newsId,
-                    '新闻网址': newsUrl,
+                    '新闻网址原': newsUrl,
+                    '新闻网址真': r.url,
                     '新闻html': newsHtml,
                     '新闻标题': newsTitle,
                     # '新闻作者': {'类型': '文本', '初始值': None, '主键否': '非主键'},
                     # '新闻机构': {'类型': '文本', '初始值': None, '主键否': '非主键'},
-                    '新闻日期年': newsTime,
-                    # '新闻日期月': {'类型': '整型', '初始值': None, '主键否': '非主键'},
-                    # '新闻日期日': {'类型': '整型', '初始值': None, '主键否': '非主键'},
+                    '新闻日期年': newsTimeYear,
+                    '新闻日期月': newsTimeMonth,
+                    '新闻日期日': newsTimeDay,
                     '新闻正文': newsContent
                 }
             )
