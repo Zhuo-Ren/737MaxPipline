@@ -1,10 +1,10 @@
 import requests
 import requestsplus
 
-url = 'http://news.carnoc.com/list/456/456513.html'
+url = 'http://news.carnoc.com/list/456/456513.html'  # 这个网页是需要meta跳转的
 
 # 使用fiddler吗
-fiddler = "./DO_NOT_TRUST_FiddlerRoot.crt"
+fiddler = None  #"./DO_NOT_TRUST_FiddlerRoot.crt"
 
 # 发送一个http请求并接收结果
 headers = {

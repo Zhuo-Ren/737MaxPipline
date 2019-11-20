@@ -5,6 +5,24 @@ from lxml import etree
 
 
 def getPlus(url, params=None, **kwarg):
+    """
+        :function requests.get函数的升级版本。之后会添加到requests.getPlus()。\n
+        1.原版get实现了304自动跳转；
+        本升级版本增加了对meta自动跳转的实现。\n
+        2.原版get中如果不提供headers参数，则会在header中声明自己是程序；
+        本升级版本增加了默认header，声明自己是浏览器。
+
+        :param url: URL for the new Request object.
+
+        :param params: (optional) Dictionary or bytes to be sent in the query string for the Request.
+
+        :param **kwargs: Optional arguments that request takes.
+
+        :return: Response <Response> object
+
+        :example 1 \n
+                requests.getPlus('http://news.carnoc.com/list/456/456513.html')
+    """
     ifNeedGet = True
     curUrl = url
     while ifNeedGet:
@@ -66,6 +84,7 @@ def getPlus(url, params=None, **kwarg):
             curUrl = nextUrl
             continue
         # 判断是否js跳转
+        "<script language='javascript'\r\ntype='text/javascript'>window.location.href='http://www.bfttiao.com/shehui/bftt711164.html'</script>"
         if False:  # 太麻烦，没实现
             print('                          需要js跳转')
             nextUrl = '巴拉巴拉'
@@ -74,7 +93,13 @@ def getPlus(url, params=None, **kwarg):
         # 无任何跳转
         ifNeedGet = False
         # 确定编码
-        r.encoding = r.apparent_encoding
+        try:
+            trueEncoding = re.search(r"<meta [^<>]*charset[^<>]*>", r.text).group()
+            trueEncoding = re.search(r"(?<=charset=)[^ \'\"]+(?=[ \'\"])", trueEncoding).group()
+            r.encoding = trueEncoding
+        except Exception as e:
+            print('                         error: 找不到真实编码格式，只能用猜的了', e)
+            r.encoding = r.apparent_encoding
     return r
 
 
