@@ -7,7 +7,7 @@ from lxml import etree
 def html2text(htmlText):
     # 利用lxml包处理content中的html标签，得到纯文本的content
     plainText = ''
-    root = etree.fromstring(htmlText)
+    root = etree.HTML(htmlText)
     for element in root.iter():
         # 对于p，先换行
         if element.tag == 'p':
