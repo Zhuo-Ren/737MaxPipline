@@ -36,6 +36,6 @@ def html2text(htmlText):
             # print(element.tail.strip(), end='')
     # 取出多余空行
     plainText = plainText.replace('\n\n', '\n')
-    plainText = re.sub(r'^\n', "", plainText)
+    plainText = re.sub(r'^\n+', "", plainText)
     #
     return plainText

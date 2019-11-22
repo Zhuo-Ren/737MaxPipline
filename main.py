@@ -14,14 +14,14 @@ from indentation import indent  # 字符串缩进
 
 
 # 搜索引擎
-searchEngine = 'bing.com'
+searchEngine = 'bing.com'  # 这个不能改，因为后边的完整url是定制的
 
 # 起止日期（截止日期当天不搜）
-startDate = datetime3.date(2018, 7, 2)
-endDate = datetime3.date(2018, 7, 3)  # (2018, 8, 2)
+startDate = datetime3.date(2018, 7, 1)
+endDate = datetime3.date(2018, 8, 1)  # (2018, 8, 2)
 
 # 每天搜几个新闻
-howManyNewsOneDay = 4
+howManyNewsOneDay = 5
 
 # 使用fiddler吗
 certFile = None  # "./DO_NOT_TRUST_FiddlerRoot.crt"  # None
@@ -103,6 +103,12 @@ try:
             newsId = searchEngine + '_' + str(curDate) + '_' + str(newsIndex)
             print('    Id：', newsId)
 
+            # 判断是否文字新闻，是否合格
+            host = re.search('(?<=://)\S+?(?=/)', newsUrl).group()
+            if host in ['www.yunjuu.com', 'v.qq.com', 'www.bilibili.com']:
+                print('    新闻不合格，这个不算数')
+                continue
+
             # 访问新闻网页
             # 发送一个http请求并接收结
             try:
@@ -128,7 +134,7 @@ try:
             print(indent(newsContent, length=40, fIndent=0, lIndent=10))
 
             # 判断是否文字新闻，是否合格
-            if len(newsContent) < 100:
+            if len(newsContent) < 200:
                 print('    新闻不合格，这个不算数')
                 continue
 

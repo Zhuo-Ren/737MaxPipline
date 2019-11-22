@@ -40,7 +40,9 @@ class SysDb(DbSql):
     @staticmethod
     def initAllSysTables(updateStrategy='rewrite'):
         """
-        function: 初始化所有系统表
+        :function 初始化所有系统表
+        
+        :param updateStrategy='rewrite'or'continue'。如果要建立的表已经存在，是删除旧表建新表，还是放弃建表操作。
         """
         for key in SysDb.表结构:
             SysDb.ensureTable(tableName=key, tableStructureInDict=SysDb.表结构[key], updateStrategy=updateStrategy)

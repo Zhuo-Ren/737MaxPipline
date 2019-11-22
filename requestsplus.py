@@ -49,11 +49,11 @@ def getPlus(url, params=None, **kwarg):
             }
         else:
             kwarg['headers']['Host'] = host
-        print('                          发起访问请求')
+        print('    发起访问请求')
         r = requests.get(curUrl, params, **kwarg)
         # 判断是否正常返回
         if 400 <= r.status_code < 600:
-            print('                          error: 状态码为4**或5**')
+            print('    error: 状态码为4**或5**  <-------------------------------------------')
         # 判断是否304跳转
             pass
         # 判断是否meta跳转
@@ -71,22 +71,22 @@ def getPlus(url, params=None, **kwarg):
             # 没匹配到content就是返回的不是html文件，或者是html文件但无需meta跳转
             pass
         else:  # content不空就是需要meta跳转
-            print('                          需要meta跳转')
+            print('    需要meta跳转')
             content = content[0]
             nextUrl = re.search(r"(?<=url=) *\S+", content)
             if nextUrl is None:
-                print('                          error:跳转url提取失败')
+                print('    error:跳转url提取失败 <-------------------------------------------')
                 return r
             else:
                 nextUrl = nextUrl.group()
                 nextUrl = nextUrl.replace(' ', '')
-                print('                          跳转到：', nextUrl)
+                print('    跳转到：', nextUrl)
             curUrl = nextUrl
             continue
         # 判断是否js跳转
         "<script language='javascript'\r\ntype='text/javascript'>window.location.href='http://www.bfttiao.com/shehui/bftt711164.html'</script>"
         if False:  # 太麻烦，没实现
-            print('                          需要js跳转')
+            print('    需要js跳转')
             nextUrl = '巴拉巴拉'
             curUrl = nextUrl
             continue
@@ -94,11 +94,15 @@ def getPlus(url, params=None, **kwarg):
         ifNeedGet = False
         # 确定编码
         try:
+            # <meta charset="gbk">
+            # <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
             trueEncoding = re.search(r"<meta [^<>]*charset[^<>]*>", r.text).group()
-            trueEncoding = re.search(r"(?<=charset=)[^ \'\"]+(?=[ \'\"])", trueEncoding).group()
+            trueEncoding = re.search(r"(?<=charset=)[\'\" ]*[^ \'\"]+(?=[ \'\">])", trueEncoding).group()
+            trueEncoding = trueEncoding.replace('\'', '')
+            trueEncoding = trueEncoding.replace('\"', '')
             r.encoding = trueEncoding
         except Exception as e:
-            print('                         error: 找不到真实编码格式，只能用猜的了', e)
+            print('    error: 找不到真实编码格式，只能用猜的了  <-------------------------------------------')
             r.encoding = r.apparent_encoding
     return r
 

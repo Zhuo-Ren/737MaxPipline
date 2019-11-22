@@ -1,8 +1,12 @@
 import requests
 import requestsplus
 
+
+url = 'http://www.chinanews.com/ty/2018/07-02/8553100.shtml'  # 这个网页是apparent_encoding会猜错的
+url = 'http://toutiao.hebtv.com/shehui/bftt711164.html'  # 这个网页是内嵌js跳转的
 url = 'http://news.carnoc.com/list/456/456513.html'  # 这个网页是需要meta跳转的
 
+url = 'https://www.cnbeta.com/articles/tech/744107.htm'
 # 使用fiddler吗
 fiddler = None  #"./DO_NOT_TRUST_FiddlerRoot.crt"
 
@@ -21,3 +25,4 @@ headers = {
     # 'TE': 'Trailers'
 }
 r = requests.getPlus(url, headers=headers, verify=fiddler)
+pass
