@@ -96,12 +96,12 @@ def getPlus(url, params=None, **kwarg):
         try:
             # <meta charset="gbk">
             # <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-            trueEncoding = re.search(r"<meta [^<>]*charset[^<>]*>", r.text).group()
-            trueEncoding = re.search(r"(?<=charset=)[\'\" ]*[^ \'\"]+(?=[ \'\">])", trueEncoding).group()
+            trueEncoding = re.search(r"<meta [^<>]*charset[^<>]*>", r.text, re.I).group()
+            trueEncoding = re.search(r"(?<=charset=)[\'\" ]*[^ \'\"]+(?=[ \'\">])", trueEncoding, re.I).group()
             trueEncoding = trueEncoding.replace('\'', '')
             trueEncoding = trueEncoding.replace('\"', '')
             r.encoding = trueEncoding
-        except Exception as e:
+        except Exception:
             print('    error: 找不到真实编码格式，只能用猜的了  <-------------------------------------------')
             r.encoding = r.apparent_encoding
     return r
